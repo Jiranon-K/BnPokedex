@@ -48,7 +48,7 @@ export class PokemonCardComponent {
 
   // star
   getEmptyStarsCount(happiness: number): number {
-    const maxStars = 10;
+    const maxStars = 6;
     return Math.max(0, maxStars - happiness);
   }
 
