@@ -1,0 +1,20 @@
+[33mee7a0e0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mbackup_before_history_cleanup[m[33m)[m Merge branch 'main' of https://github.com/Jiranon-K/BnPokedex
+[33ma34b422[m  #
+[33ma4fe250[m Merge branch 'main' of https://github.com/Jiranon-K/BnPokedex
+[33m71b9775[m Combined changes from the last 10 commits
+[33m8e5b13c[m Remove direct happiness value display from Pokemon card component
+[33m9b7b2da[m Add empty star image to Pokemon card component for future star rating implementation
+[33m2bcabd6[m Refactor Pokemon card
+[33mf32b8ff[m Remove direct happiness value display and prepare for star rating implementation in Pokemon card component
+[33mee2544e[m Remove unused star image from Pokemon card component
+[33m8dd3a50[m Enhance happiness display in Pokemon card component with star ratings and count
+[33mac0839d[m Refactor happiness level calculation to use weakness count instead of weakness value
+[33m26d75f8[m Refactor HTML structure for improved readability and consistency in the Pokemon card component
+[33m6248fb5[m Fix HP level calculation to return the minimum of hp value and 100
+[33m0929368[m Fix HP level calculation to return 0 for invalid values instead of 100
+[33m52d9eb8[m Remove unused Dockerfiles and favicon, and update grid layout for Pokemon cards
+[33m61fe97e[m Refactor styles.scss for improved background styling and formatting
+[33m610b2f2[m Refactor HTML structure for improved readability and consistency
+[33mfff9520[m Refactor Dockerfile and server.js for multi-stage build and improved API routing
+[33ma4e7c00[m Refactor Dockerfile for improved multi-stage build, Nginx configuration, and startup script
+[33m2f228f2[m Refactor Dockerfile and docker-compose.yml for improved structure and health checks

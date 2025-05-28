@@ -1,0 +1,345 @@
+<div
+  *ngIf="isOpen"
+  class="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 modal-fade-in"
+  (click)="onOverlayClick($event)"
+>
+  <div
+    class="modal-content bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl w-[85%] h-[85%] mx-auto my-auto transform transition-all overflow-hidden flex flex-col border border-white/20"
+  >
+    <!-- Header Section  -->
+    <div
+      class="relative p-4 bg-gradient-to-br from-red-500/30 to-black/30 backdrop-blur-xl border-b border-white/20"
+    >
+      <!-- Title -->
+      <div class="text-center mb-4">
+        <h2 class="text-2xl font-bold font-atma text-white mb-1">
+          Choose Your Pokémon
+        </h2>
+        <p class="text-white/70 font-gaegu text-sm">
+          Find and add your favorite Pokémon to your collection
+        </p>
+      </div>
+
+      <!-- Modern Search Section -->
+      <form (submit)="onSearchSubmit($event)" class="space-y-3">
+        <!-- Search Input -->
+        <div class="relative">
+          <div
+            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+          >
+            <svg
+              class="h-4 w-4 text-white/60"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+          </div>
+          <input
+            type="text"
+            [(ngModel)]="searchName"
+            name="searchName"
+            placeholder="Search Pokémon name..."
+            class="w-full pl-10 pr-4 py-2.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-300 text-sm"
+          />
+        </div>
+
+        <!--  Type Filter  -->
+        <div class="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            (click)="searchType = ''"
+            [class.type-selected]="!searchType"
+            class="px-4 py-2 bg-white/20 backdrop-blur-sm border-2 rounded-full text-xs font-bold text-white/80 hover:text-white hover:bg-white/30 transition-all duration-300 type-chip"
+          >
+            All Types
+          </button>
+
+          <button
+            *ngFor="let type of pokemonTypes"
+            type="button"
+            (click)="searchType = type"
+            [class.type-selected]="searchType === type"
+            class="px-4 py-2 backdrop-blur-sm border-2 rounded-full text-xs font-bold text-white transition-all duration-300 type-chip hover:scale-105"
+            [style.background-color]="searchType === type ? '#22c55e' : getTypeColor(type) + '40'"
+            [style.border-color]="searchType === type ? '#16a34a' : getTypeColor(type) + '60'"
+            [style.color]="searchType === type ? '#ffffff' : '#ffffff'"
+          >
+            {{ type }}
+            <span *ngIf="searchType === type" class="ml-1">✓</span>
+          </button>
+        </div>
+
+        <!-- Selected Type Display -->
+        <div *ngIf="searchType" class="text-center">
+          <span class="text-sm text-white/90 bg-green-600/30 px-3 py-1 rounded-full border border-green-500/50">
+            Selected Type: <span class="font-bold text-green-300">{{ searchType }}</span>
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2 justify-center">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-red-400/80 hover:bg-red-400/90 text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm text-sm"
+          >
+            <svg
+              class="inline h-3 w-3 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+            Search
+          </button>
+
+          <button
+            type="button"
+            (click)="clearSearch()"
+            class="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm text-sm"
+          >
+            <svg
+              class="inline h-3 w-3 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              ></path>
+            </svg>
+            Clear
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Content Area  -->
+    <div
+      class="flex-1 overflow-y-auto p-4 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm custom-red-scrollbar"
+    >
+      <!-- Loading State -->
+      <div *ngIf="loading" class="flex justify-center items-center h-48">
+        <div class="text-center">
+          <div class="relative">
+            <div
+              class="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white/80 mx-auto mb-3"
+            ></div>
+            <div
+              class="absolute inset-0 rounded-full h-12 w-12 border-4 border-transparent border-t-red-400/60 animate-spin mx-auto"
+              style="animation-delay: 0.1s; animation-duration: 1.5s"
+            ></div>
+          </div>
+          <p class="text-white/80 font-gaegu text-sm">
+            Loading Pokémon data...
+          </p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error" class="text-center text-white p-6">
+        <div class="flex justify-center mb-3 animate-bounce">
+          <img src="assets/gaming.png" alt=""  class="w-16 h-16"/>
+        </div>
+        <p class="font-gaegu text-sm text-white/80">{{ error }}</p>
+        <button
+          (click)="loadPokemons()"
+          class="mt-3 px-4 py-2 bg-red-500/80 hover:bg-red-600/90 text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm text-sm"
+        >
+          Try Again
+        </button>
+      </div>
+
+      <!--  Pokemon List View -->
+      <div *ngIf="!loading && !error" class="space-y-4">
+        <div
+          *ngFor="
+            let pokemon of filteredPokemons.slice(0, displayLimit);
+            trackBy: trackByPokemonId;
+            let i = index
+          "
+          class="pokemon-card-list group relative bg-white/10 backdrop-blur-lg rounded-2xl border-2 border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden hover:border-white/40"
+          (click)="onSelectPokemon(pokemon)"
+          [style.background]="
+            'linear-gradient(135deg, ' +
+            getTypeColor(pokemon.type) +
+            '20, rgba(255,255,255,0.1))'
+          "
+          [style.animation-delay]="i * 0.05 + 's'"
+        >
+         
+          <div
+            class="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-30 transition-opacity duration-500 rounded-2xl"
+            [style.background]="
+              'linear-gradient(45deg, ' +
+              getTypeColor(pokemon.type) +
+              '60, transparent, ' +
+              getTypeColor(pokemon.type) +
+              '60)'
+            "
+          ></div>
+
+          <!--  Card Content -->
+          <div class="relative z-10 flex items-center p-6 gap-6">
+            <!-- Pokemon Image  -->
+            <div class="relative flex-shrink-0">
+              <div
+                class="w-32 h-32 rounded-2xl bg-white/20 backdrop-blur-sm p-3 transition-transform duration-300 group-hover:scale-110 shadow-lg"
+              >
+                <img
+                  [src]="pokemon.imageUrl"
+                  [alt]="pokemon.name"
+                  (error)="onImageError($event, pokemon)"
+                  class="w-full h-full object-contain drop-shadow-lg"
+                />
+              </div>
+
+              <!--  Badge -->
+              <div
+                class="absolute -top-2 -right-2 px-3 py-1.5 rounded-full text-white text-sm font-bold shadow-xl"
+                [style.background-color]="getTypeColor(pokemon.type)"
+              >
+                {{ pokemon.type }}
+              </div>
+            </div>
+
+            <!--  Pokemon Info -->
+            <div class="flex-1 min-w-0">
+              <div class="mb-4">
+                <!-- Pokemon Name  -->
+                <h3
+                  class="text-2xl font-bold font-atma text-white mb-2"
+                >
+                  {{ pokemon.name }}
+                </h3>
+                
+                <!-- Set and Number -->
+                <p class="text-sm text-white/70">
+                  {{ pokemon.set }} • #{{ pokemon.number }} • {{ pokemon.rarity }}
+                </p>
+              </div>
+
+              <!-- HP Display  -->
+              <div class="mb-4">
+                <div class="flex items-center gap-4">
+                  <div class="bg-red-500/30 backdrop-blur-sm rounded-xl px-4 py-2 border border-red-400/50">
+                    <div class="text-xs text-white/80">HP</div>
+                    <div class="text-2xl font-bold text-red-400">
+                      {{ pokemon.hp || "N/A" }}
+                    </div>
+                  </div>
+                  
+                  <!-- Stats Preview -->
+                  <div
+                    class="grid grid-cols-2 gap-3 text-sm"
+                    *ngIf="getStats(pokemon) as stats"
+                  >
+                    <div class="text-center bg-orange-500/20 rounded-lg px-3 py-2 border border-orange-400/30">
+                      <div class="text-white/70 text-xs">STR</div>
+                      <div class="font-bold text-orange-400">
+                        {{ stats.strength }}%
+                      </div>
+                    </div>
+                    <div class="text-center bg-blue-500/20 rounded-lg px-3 py-2 border border-blue-400/30">
+                      <div class="text-white/70 text-xs">WEAK</div>
+                      <div class="font-bold text-blue-400">
+                        {{ stats.weakness }}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Attacks Display  -->
+              <div *ngIf="pokemon.attacks && pokemon.attacks.length > 0">
+                <div class="text-xs text-white/70 mb-2">ATTACKS</div>
+                <div class="flex flex-wrap gap-2">
+                  <div
+                    *ngFor="let attack of pokemon.attacks"
+                    class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/30"
+                  >
+                    <span class="text-white font-semibold text-sm">{{ attack.name }}</span>
+                    <span class="text-red-400 font-bold ml-2" *ngIf="attack.damage">
+                      {{ attack.damage }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Selection Indicator -->
+            <div
+              class="flex-shrink-0 bg-green-500/20 backdrop-blur-sm rounded-full p-3 border-2 border-green-400/50 group-hover:bg-green-500/30 group-hover:border-green-400 transition-all duration-300"
+            >
+              <svg
+                class="h-6 w-6 text-green-400 transform group-hover:scale-125 transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="3"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Show More Button -->
+        <div 
+          *ngIf="filteredPokemons.length > displayLimit" 
+          class="text-center pt-4"
+        >
+          <button
+            (click)="showMore()"
+            class="px-6 py-3 bg-red-500/80 hover:bg-red-600/90 text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm"
+          >
+            Show More ({{ filteredPokemons.length - displayLimit }} remaining)
+          </button>
+        </div>
+      </div>
+
+      <!-- No Results Found -->
+      <div
+        *ngIf="!loading && !error && filteredPokemons.length === 0"
+        class="text-center py-12"
+      >
+        <div class="text-4xl mb-3 animate-pulse">🔍</div>
+        <p class="font-gaegu text-sm text-white/80">No Pokémon found</p>
+        <p class="font-gaegu text-white/60 mt-1 text-xs">
+          Try different search terms or clear your filters
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div
+      class="bg-white/10 backdrop-blur-xl px-4 py-3 border-t border-white/20"
+    >
+      <div class="flex justify-between items-center text-xs text-white/80">
+        <span>Found {{ filteredPokemons.length }} Pokémon</span>
+        <span class="font-gaegu"
+          >Click on a Pokémon to add it to your collection!</span
+        >
+      </div>
+    </div>
+  </div>
+</div>

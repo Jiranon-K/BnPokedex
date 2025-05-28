@@ -1,0 +1,128 @@
+<div
+  class="pokemon-card group relative bg-white/20 backdrop-blur-lg rounded-2xl border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 overflow-hidden"
+  [style.background]="
+    'linear-gradient(135deg, ' +
+    getTypeColor(pokemon.type) +
+    '20, rgba(255,255,255,0.15))'
+  "
+>
+  <!-- Glow Effect -->
+  <div
+    class="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-2xl"
+    [style.background]="
+      'linear-gradient(135deg, ' + getTypeColor(pokemon.type) + ', transparent)'
+    "
+  ></div>
+
+  <!-- Pokemon Image Section -->
+  <div class="relative p-6">
+    <img
+      [src]="pokemon.imageUrl"
+      [alt]="pokemon.name"
+      (error)="onImageError($event)"
+      class="w-full h-48 object-contain rounded-xl transition-transform duration-500 group-hover:scale-110"
+    />
+
+    <!-- Type Badge -->
+    <div
+      class="absolute top-2 right-2 px-3 py-1 rounded-full text-white text-sm font-bold shadow-lg backdrop-blur-sm"
+      [style.background-color]="getTypeColor(pokemon.type)"
+    >
+      {{ pokemon.type }}
+    </div>
+  </div>
+
+  <!-- Pokemon Info -->
+  <div class="p-4 pt-0">
+    <h3 class="text-xl font-bold font-atma text-gray-800 mb-4 text-center">
+      {{ pokemon.name }}
+    </h3>
+
+    <!-- Basic Stats Grid -->
+    <div class="space-y-3" *ngIf="getStats() as stats">
+      <!-- HP -->
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 font-medium">HP</span>
+        <span class="font-bold text-red-600">{{ stats.hp }}</span>
+      </div>
+      <div class="w-full bg-white/30 rounded-full h-2 backdrop-blur-sm">
+        <div
+          class="bg-gradient-to-r from-red-400 to-red-600 h-2 rounded-full transition-all duration-700 shadow-sm"
+          [style.width.%]="stats.hp"
+        ></div>
+      </div>
+
+      <!-- Strength -->
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 font-medium">STR</span>
+        <span class="font-bold text-orange-600">{{ stats.strength }}%</span>
+      </div>
+      <div class="w-full bg-white/30 rounded-full h-2 backdrop-blur-sm">
+        <div
+          class="bg-gradient-to-r from-orange-400 to-orange-600 h-2 rounded-full transition-all duration-700 shadow-sm"
+          [style.width.%]="stats.strength"
+        ></div>
+      </div>
+
+      <!-- Weakness -->
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-600 font-medium">WEAK</span>
+        <span class="font-bold text-blue-600">{{ stats.weakness }}%</span>
+      </div>
+      <div class="w-full bg-white/30 rounded-full h-2 backdrop-blur-sm">
+        <div
+          class="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full transition-all duration-700 shadow-sm"
+          [style.width.%]="stats.weakness"
+        ></div>
+      </div>
+
+      <!-- Happiness -->
+      <div class="text-center pt-2">
+        <div class="text-sm text-gray-600 font-medium mb-1">HAPPINESS</div>
+        <div class="flex justify-center items-center flex-wrap">
+          <span
+            *ngFor="let star of createArray(stats.happiness)"
+            class="inline-block"
+          >
+            <img
+              src="assets/cute.png"
+              class="w-6 h-6 mx-0.5 filter brightness-100"
+              alt="Full Star"
+            />
+          </span>
+
+          <span
+            *ngFor="
+              let star of createArray(getEmptyStarsCount(stats.happiness))
+            "
+            class="inline-block"
+          >
+            <img
+              src="assets/cute.png"
+              class="w-6 h-6 mx-0.5 filter brightness-50 opacity-30"
+              alt="Empty Star"
+            />
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="p-4 pt-0 flex gap-2">
+    <button
+      (click)="onViewDetails()"
+      class="flex-1 px-4 py-2 bg-green-500/80 hover:bg-green-600/90 text-white text-sm font-semibold rounded-xl backdrop-blur-sm transition-all duration-300 transform hover:scale-105 shadow-lg"
+    >
+      View Details
+    </button>
+
+    <button
+      (click)="onRemove()"
+      class="px-4 py-2 bg-red-500/80 hover:bg-red-600/90 text-white text-sm font-semibold rounded-xl backdrop-blur-sm transition-all duration-300 transform hover:scale-105 shadow-lg"
+      title="Remove Pokemon"
+    >
+      🗑️
+    </button>
+  </div>
+</div>
